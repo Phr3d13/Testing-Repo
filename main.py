@@ -10,12 +10,12 @@ CHAT_MSG = re.compile(r"^:\w+!\w+@\w+\.tmi\.twitch\.tv PRIVMSG #\w+ :")
 try:
 	s = socket.socket()
 	s.connect((config.HOST, config.PORT))
-	s.send("PASS {}\r\n".format(config.PASS).encode("utf-8"))
-	s.send("NICK {}\r\n".format(config.NICK).encode("utf-8"))
-	s.send("JOIN {}\r\n".format(config.CHAN).encode("utf-8"))
+	s.send(f"PASS {config.PASS}\r\n".encode("utf-8"))
+	s.send(f"NICK {config.NICK}\r\n".encode("utf-8"))
+	s.send(f"JOIN {config.CHAN}\r\n".encode("utf-8"))
 	connected = True #Socket succefully connected
 except Exception as e:
-	print(str(e))
+	print(e)
 	connected = False #Socket failed to connect
 
 def bot_loop():
@@ -25,9 +25,9 @@ def bot_loop():
 			s.send("PONG :tmi.twitch.tv\r\n".encode("utf-8"))
 			print("Pong")
 		else:
-			username = re.search(r"\w+", response).group(0) 
+			username = re.search(r"\w+", response)[0]
 			message = CHAT_MSG.sub("", response)
-			print(username + ": " + response)
+			print(f"{username}: {response}")
 			for pattern in config.BAN_PAT:
 				if re.match(pattern, message):
 					utility.ban(s, username)
